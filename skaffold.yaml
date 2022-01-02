@@ -1,0 +1,82 @@
+apiVersion: skaffold/v2beta26
+kind: Config
+metadata:
+  name: watson
+build:
+  artifacts:
+  - image: shokohsc/watson
+    context: .
+    sync:
+      manual:
+      - src: ./**/*.js
+        dest: .
+      - src: ./viewsjsx
+        dest: .
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  kustomize:
+    paths:
+    - k8s/base
+profiles:
+- name: dev
+  activation:
+  - command: dev
+  build:
+    artifacts:
+    - image: shokohsc/watson
+      sync:
+        manual:
+        - src: ./**/*.js
+          dest: .
+        - src: ./viewsjsx
+          dest: .
+- name: shokohsc
+  build:
+    artifacts:
+    - image: shokohsc/watson
+      sync:
+        manual:
+        - src: ./**/*.js
+          dest: .
+        - src: ./viewsjsx
+          dest: .
+      kaniko:
+        cache:
+          repo: shokohsc/watson
+    cluster:
+      dockerConfig:
+        secretName: kaniko-secret
+      namespace: kaniko
+      pullSecretName: kaniko-secret
+      resources:
+        requests:
+          cpu: 1
+          memory: 1Gi
+        limits:
+          cpu: 2
+          memory: 2Gi
+  deploy:
+    kustomize:
+      paths:
+      - k8s/overlays/shokohsc
+- name: prod
+  build:
+    artifacts:
+    - image: shokohsc/watson
+      kaniko:
+        cache:
+          repo: shokohsc/watson
+        dockerfile: Dockerfile
+    cluster:
+      dockerConfig:
+        secretName: kaniko-secret
+      namespace: kaniko
+      pullSecretName: kaniko-secret
+      resources:
+        requests:
+          cpu: 1
+          memory: 1Gi
+        limits:
+          cpu: 2
+          memory: 2Gi

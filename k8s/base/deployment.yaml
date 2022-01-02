@@ -1,0 +1,44 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: watson
+spec:
+  selector:
+    matchLabels:
+      app: watson
+  template:
+    metadata:
+      labels:
+        app: watson
+    spec:
+      containers:
+        - name: watson
+          image: shokohsc/watson
+          env:
+            - name: SPEECH_TO_TEXT_APIKEY
+              value: some_api_key
+            - name: SPEECH_TO_TEXT_IAM_APIKEY
+              value: some_api_key
+            - name: SPEECH_TO_TEXT_URL
+              value: some_url
+            - name: SPEECH_TO_TEXT_AUTH_TYPE
+              value: some_iam
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: http
+          # readinessProbe:
+          #   httpGet:
+          #     port: http
+          #     path: /
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64M
+            limits:
+              cpu: 1000m
+              memory: 512M

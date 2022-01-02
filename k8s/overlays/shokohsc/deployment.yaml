@@ -1,0 +1,20 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: watson
+spec:
+  template:
+    spec:
+      containers:
+        - name: watson
+          image: shokohsc/watson
+          env:
+            - name: SPEECH_TO_TEXT_APIKEY
+              value: some_api_key
+            - name: SPEECH_TO_TEXT_IAM_APIKEY
+              value: some_api_key
+            - name: SPEECH_TO_TEXT_URL
+              value: some_url
+            - name: SPEECH_TO_TEXT_AUTH_TYPE
+              value: some_iam
